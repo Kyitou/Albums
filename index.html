@@ -1,501 +1,1353 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pinterest-By Tou</title>
-    <link rel="icon" type="image/x-icon" href="Pinterest.svg.webp" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <style>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pinterest-By Tou</title>
+  <link rel="icon" type="image/x-icon" href="Pinterest.svg.webp" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fff;
+      --ink: #111;
+      --muted: #767676;
+      --field: #e9e9e4;
+      --line: #e5e5e5;
+      --red: #e60023;
+      --sidebar: 68px;
+      --gap: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--sidebar);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 0;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .sidebar .logo {
+      color: var(--red);
+      margin-bottom: 14px;
+    }
+
+    .sidebar .logo img {
+      display: block;
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .icon-btn {
+      position: relative;
+      display: grid;
+      place-items: center;
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+    }
+
+    .icon-btn:hover,
+    .icon-btn.active {
+      background: var(--field);
+    }
+
+    svg.i {
+      display: block;
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dot {
+      position: absolute;
+      top: 11px;
+      right: 11px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    /* Labels appear beside the icon without moving other icons */
+    .icon-text {
+      position: absolute;
+      top: 50%;
+      left: 56px;
+      z-index: 100;
+      transform: translateY(-50%);
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #000;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+
+    .icon-btn.active .icon-text {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Top bar and search */
+    .main {
+      margin-left: var(--sidebar);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px 8px 16px;
+      background: var(--bg);
+    }
+
+    .search {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: 10px;
+      height: 48px;
+      padding: 0 16px;
+      border-radius: 24px;
+      background: var(--field);
+    }
+
+    .search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--ink);
+      font-size: 16px;
+    }
+
+    .search input::placeholder {
+      color: var(--muted);
+    }
+
+    .search .i {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .search .tool {
+      margin-left: 4px;
+    }
+
+    .search .tool .i {
+      width: 24px;
+      height: 24px;
+      color: var(--ink);
+    }
+
+    .avatar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .avatar span {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f7d9a8, #e9a0b4);
+    }
+
+    .avatar .i {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+    }
+
+    .tabs {
+      padding: 10px 16px 16px 32px;
+    }
+
+    .tab {
+      padding: 4px 4px 6px;
+      border-bottom: 3px solid var(--ink);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Masonry feed */
+    .feed {
+      column-width: 230px;
+      column-gap: var(--gap);
+      padding: 0 16px 40px;
+    }
+
+    .pin {
+      position: relative;
+      break-inside: avoid;
+      margin-bottom: 20px;
+    }
+
+    .thumb-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .pin .thumb {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: var(--field);
+      object-fit: cover;
+    }
+
+    .thumb-wrap:after {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      content: "";
+      pointer-events: none;
+      transition: background 0.15s;
+    }
+
+    .pin:hover .thumb-wrap:after {
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .pin .save {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      padding: 10px 16px;
+      border-radius: 24px;
+      background: var(--red);
+      color: #fff;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .pin:hover .save,
+    .pin .save:focus-visible {
+      opacity: 1;
+    }
+
+    .pin .more {
+      display: block;
+      width: 32px;
+      height: 20px;
+      margin: 4px 0 0 auto;
+      color: var(--ink);
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    /* Tablet */
+    @media (max-width: 1279px) and (min-width: 481px) {
       :root {
-        --bg: #fff;
-        --ink: #111;
-        --muted: #767676;
-        --field: #e9e9e4;
-        --line: #e5e5e5;
-        --red: #e60023;
-        --sidebar: 68px;
-        --gap: 16px;
+        --sidebar: 60px;
+        --gap: 12px;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
-        background: var(--bg);
-        color: var(--ink);
-        font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
-      button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-      :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
-      /* Sidebar */
       .sidebar {
-        position: fixed; inset: 0 auto 0 0; width: var(--sidebar); z-index: 20;
-        display: flex; flex-direction: column; align-items: center; gap: 14px;
-        padding: 20px 0; border-right: 1px solid var(--line); background: var(--bg);
+        gap: 10px;
+        padding: 16px 0;
       }
-      .sidebar .logo { color: var(--red); margin-bottom: 14px; }
-      .sidebar .logo img { display: block; width: 32px; height: 32px; object-fit: contain; }
-      .icon-btn {
-        position: relative; display: grid; place-items: center;
-        flex: 0 0 48px; width: 48px; height: 48px; border-radius: 16px;
-      }
-      .icon-btn:hover, .icon-btn.active { background: var(--field); }
-      svg.i {
-        display: block; width: 24px; height: 24px; fill: none; stroke: currentColor;
-        stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-      }
-      .dot {
-        position: absolute; top: 11px; right: 11px; width: 8px; height: 8px;
-        border-radius: 50%; background: var(--red);
-      }
-      .spacer { flex: 1; }
 
-      /* Labels appear beside the icon without moving other icons */
-      .icon-text {
-        position: absolute; top: 50%; left: 56px; z-index: 100;
-        transform: translateY(-50%); padding: 8px 10px; border-radius: 8px;
-        background: #000; color: #fff; font-size: 12px; font-weight: 600;
-        line-height: 1.2; white-space: nowrap;
-        opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.15s;
+      .sidebar .icon-btn {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
       }
-      .icon-btn.active .icon-text { opacity: 1; visibility: visible; }
 
-      /* Top bar and search */
-      .main { margin-left: var(--sidebar); }
       .topbar {
-        position: sticky; top: 0; z-index: 10; display: flex; align-items: center;
-        gap: 16px; padding: 12px 24px 8px 16px; background: var(--bg);
+        padding: 10px 16px 8px 12px;
       }
+
+      .tabs {
+        padding: 8px 12px 12px 20px;
+      }
+
+      .feed {
+        column-width: 190px;
+        padding: 0 12px 32px;
+      }
+
+      .pin {
+        margin-bottom: 14px;
+      }
+    }
+
+    /* Mobile bottom navigation */
+    @media (max-width: 480px) {
+      :root {
+        --gap: 8px;
+      }
+
+      .sidebar {
+        inset: auto 0 0;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 0;
+        width: 100%;
+        height: 56px;
+        padding: 0 4px;
+        border-top: 1px solid var(--line);
+        border-right: 0;
+      }
+
+      .sidebar .logo,
+      .sidebar .spacer {
+        display: none;
+      }
+
+      .sidebar .icon-btn {
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
+      }
+
+      .icon-text {
+        top: auto;
+        bottom: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .main {
+        margin-left: 0;
+        padding-bottom: 72px;
+      }
+
+      .topbar {
+        gap: 10px;
+        padding: 8px 10px;
+      }
+
       .search {
-        display: flex; flex: 1; align-items: center; gap: 10px; height: 48px;
-        padding: 0 16px; border-radius: 24px; background: var(--field);
+        height: 44px;
+        padding: 0 12px;
       }
-      .search input {
-        flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
-        color: var(--ink); font-size: 16px;
-      }
-      .search input::placeholder { color: var(--muted); }
-      .search .i { width: 20px; height: 20px; color: var(--muted); }
-      .search .tool { margin-left: 4px; }
-      .search .tool .i { width: 24px; height: 24px; color: var(--ink); }
-      .avatar { display: flex; align-items: center; gap: 6px; }
-      .avatar span {
-        width: 32px; height: 32px; border-radius: 50%;
-        background: linear-gradient(135deg, #f7d9a8, #e9a0b4);
-      }
-      .avatar .i { width: 16px; height: 16px; color: var(--muted); }
-      .tabs { padding: 10px 16px 16px 32px; }
-      .tab { padding: 4px 4px 6px; border-bottom: 3px solid var(--ink); font-size: 16px; font-weight: 600; }
 
-      /* Masonry feed */
-      .feed { column-width: 230px; column-gap: var(--gap); padding: 0 16px 40px; }
-      .pin { position: relative; break-inside: avoid; margin-bottom: 20px; }
-      .thumb-wrap { position: relative; overflow: hidden; border-radius: 16px; }
-      .pin .thumb { display: block; width: 100%; height: auto; background: var(--field); object-fit: cover; }
-      .thumb-wrap:after {
-        position: absolute; inset: 0; background: rgba(0, 0, 0, 0); content: "";
-        pointer-events: none; transition: background 0.15s;
+      .tabs {
+        padding: 6px 10px 10px 14px;
       }
-      .pin:hover .thumb-wrap:after { background: rgba(0, 0, 0, 0.18); }
+
+      .feed {
+        column-count: 2;
+        column-width: auto;
+        padding: 0 8px 24px;
+      }
+
+      .pin {
+        margin-bottom: 10px;
+      }
+
+      .thumb-wrap {
+        border-radius: 12px;
+      }
+
       .pin .save {
-        position: absolute; top: 12px; right: 12px; z-index: 2; padding: 10px 16px;
-        border-radius: 24px; background: var(--red); color: #fff; font-weight: 600;
-        opacity: 0; transition: opacity 0.15s;
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        opacity: 1;
       }
-      .pin:hover .save, .pin .save:focus-visible { opacity: 1; }
-      .pin .more {
-        display: block; width: 32px; height: 20px; margin: 4px 0 0 auto;
-        color: var(--ink); font-weight: 700; letter-spacing: 1px; line-height: 1;
-      }
+    }
 
-      /* Tablet */
-      @media (max-width: 1279px) and (min-width: 481px) {
-        :root { --sidebar: 60px; --gap: 12px; }
-        .sidebar { gap: 10px; padding: 16px 0; }
-        .sidebar .icon-btn { flex-basis: 44px; width: 44px; height: 44px; }
-        .topbar { padding: 10px 16px 8px 12px; }
-        .tabs { padding: 8px 12px 12px 20px; }
-        .feed { column-width: 190px; padding: 0 12px 32px; }
-        .pin { margin-bottom: 14px; }
-      }
+    @media (prefers-reduced-motion: reduce) {
 
-      /* Mobile bottom navigation */
-      @media (max-width: 480px) {
-        :root { --gap: 8px; }
-        .sidebar {
-          inset: auto 0 0; flex-direction: row; justify-content: space-around; gap: 0;
-          width: 100%; height: 56px; padding: 0 4px;
-          border-top: 1px solid var(--line); border-right: 0;
-        }
-        .sidebar .logo, .sidebar .spacer { display: none; }
-        .sidebar .icon-btn { flex-basis: 44px; width: 44px; height: 44px; }
-        .icon-text { top: auto; bottom: 50px; left: 50%; transform: translateX(-50%); }
-        .main { margin-left: 0; padding-bottom: 72px; }
-        .topbar { gap: 10px; padding: 8px 10px; }
-        .search { height: 44px; padding: 0 12px; }
-        .tabs { padding: 6px 10px 10px 14px; }
-        .feed { column-count: 2; column-width: auto; padding: 0 8px 24px; }
-        .pin { margin-bottom: 10px; }
-        .thumb-wrap { border-radius: 12px; }
-        .pin .save { top: 8px; right: 8px; padding: 6px 10px; font-size: 13px; opacity: 1; }
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
       }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { transition: none !important; }
-      }
+    }
 
-      /* Show icon labels on hover */
-      .icon-btn:hover .icon-text,
-      .icon-btn:focus-visible .icon-text,
-      .tool:hover .icon-text,
-      .tool:focus-visible .icon-text { opacity: 1; visibility: visible; }
+    /* Show icon labels on hover */
+    .icon-btn:hover .icon-text,
+    .icon-btn:focus-visible .icon-text,
+    .tool:hover .icon-text,
+    .tool:focus-visible .icon-text {
+      opacity: 1;
+      visibility: visible;
+    }
 
-      /* Top bar tool buttons: label below the icon */
-      .topbar > .tool { position: relative; }
-      .topbar > .tool .icon-text {
-        top: calc(100% + 8px); left: 50%; bottom: auto; font-size: 10px; padding: 6px 8px;
-        transform: translateX(-50%); z-index: 1000;
-      }
+    /* Top bar tool buttons: label below the icon */
+    .topbar>.tool {
+      position: relative;
+    }
 
-      /* ===== SEARCH PANEL ===== */
-      .search-overlay {
-        display: none; position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.55);
-      }
+    .topbar>.tool .icon-text {
+      top: calc(100% + 8px);
+      left: 50%;
+      bottom: auto;
+      font-size: 10px;
+      padding: 6px 8px;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+
+    /* ===== SEARCH PANEL ===== */
+    .search-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .search-panel {
+      display: none;
+      position: absolute;
+      top: 68px;
+      left: 0;
+      right: 77px;
+      max-height: calc(100vh - 90px);
+      overflow-y: auto;
+      padding: 8px 24px 16px;
+      border-radius: 0 0 20px 20px;
+      background: var(--bg);
+    }
+
+    .search-panel h2 {
+      margin: 22px 0 12px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .sugg-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .sugg {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 4px;
+      border-radius: 16px;
+      background: #f4f4f2;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    .sugg:hover {
+      background: #e9e9e4;
+    }
+
+    .sugg img {
+      flex: 0 0 90px;
+      width: 90px;
+      height: 90px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--field);
+    }
+
+    .search-open .search-overlay,
+    .search-open .search-panel {
+      display: block;
+    }
+
+    .search-open .topbar {
+      z-index: 40;
+    }
+
+    .search-open .search {
+      outline: 3px solid #7bb3f0;
+    }
+
+    @media (max-width: 1279px) and (min-width: 481px) {
       .search-panel {
-        display: none; position: absolute; top: 68px; left: 0; right: 77px;
-        max-height: calc(100vh - 90px); overflow-y: auto; padding: 8px 24px 16px;
-        border-radius: 0 0 20px 20px; background: var(--bg);
+        left: 0;
+        right: 16px;
+        top: 62px;
       }
-      .search-panel h2 { margin: 22px 0 12px; font-size: 20px; font-weight: 700; }
-      .sugg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-      .sugg {
-        display: flex; align-items: center; gap: 14px; padding: 4px;
-        border-radius: 16px; background: #f4f4f2; text-align: left; font-size: 16px;
+
+      .sugg-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
-      .sugg:hover { background: #e9e9e4; }
+
       .sugg img {
-        flex: 0 0 90px; width: 90px; height: 90px; border-radius: 12px;
-        object-fit: cover; background: var(--field);
+        flex-basis: 72px;
+        width: 72px;
+        height: 72px;
       }
-      .search-open .search-overlay, .search-open .search-panel { display: block; }
-      .search-open .topbar { z-index: 40; }
-      .search-open .search { outline: 3px solid #7bb3f0; }
+    }
 
-      @media (max-width: 1279px) and (min-width: 481px) {
-        .search-panel { left: 0; right: 16px; top: 62px; }
-        .sugg-grid { grid-template-columns: repeat(3, 1fr); }
-        .sugg img { flex-basis: 72px; width: 72px; height: 72px; }
-      }
-      @media (max-width: 480px) {
-        .search-panel { left: 0; right: 0; top: 56px; padding: 4px 12px 12px; }
-        .sugg-grid { grid-template-columns: 1fr; }
-        .sugg { font-size: 15px; }
-        .sugg img { flex-basis: 56px; width: 56px; height: 56px; }
+    @media (max-width: 480px) {
+      .search-panel {
+        left: 0;
+        right: 0;
+        top: 56px;
+        padding: 4px 12px 12px;
       }
 
+      .sugg-grid {
+        grid-template-columns: 1fr;
+      }
 
-      /* ===== CREATE PANEL ===== */
-      :root { --create-w: 345px; }
-      .main { transition: margin-left 0.2s ease; }
+      .sugg {
+        font-size: 15px;
+      }
+
+      .sugg img {
+        flex-basis: 56px;
+        width: 56px;
+        height: 56px;
+      }
+    }
+
+
+    /* ===== CREATE PANEL ===== */
+    :root {
+      --create-w: 345px;
+    }
+
+    .main {
+      transition: margin-left 0.2s ease;
+    }
+
+    .create-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: var(--sidebar);
+      width: var(--create-w);
+      z-index: 15;
+      padding: 22px 22px;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+      transform: translateX(-110%);
+      visibility: hidden;
+      transition: transform 0.2s ease, visibility 0.2s;
+    }
+
+    .create-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 22px 0;
+    }
+
+    .create-head h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .create-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+    }
+
+    .create-close:hover {
+      background: var(--field);
+    }
+
+    .create-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      width: calc(100% + 16px);
+      margin: 0 -8px 10px;
+      padding: 12px 8px;
+      border-radius: 16px;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .create-item:hover,
+    .create-item:focus-visible {
+      background: #f3f3ee;
+    }
+
+    .create-icon {
+      flex: 0 0 54px;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: #e6e6e0;
+    }
+
+    .create-item b {
+      display: block;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .create-item small {
+      display: block;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    .badge-new {
+      margin-left: 6px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #dff5e8;
+      font-size: 12px;
+      font-weight: 500;
+      color: #0a7a43;
+    }
+
+    .create-open .create-panel {
+      transform: none;
+      visibility: visible;
+    }
+
+    .create-open .main {
+      margin-left: calc(var(--sidebar) + var(--create-w));
+    }
+
+    .create-open #createBtn {
+      background: var(--field);
+    }
+
+    @media (max-width: 1279px) and (min-width: 481px) {
+      :root {
+        --create-w: 300px;
+      }
+    }
+
+    @media (max-width: 480px) {
       .create-panel {
-        position: fixed; top: 0; bottom: 0; left: var(--sidebar); width: var(--create-w);
-        z-index: 15; padding: 22px 22px; overflow-y: auto;
-        border-right: 1px solid var(--line); background: var(--bg);
-        transform: translateX(-110%); visibility: hidden;
-        transition: transform 0.2s ease, visibility 0.2s;
-      }
-      .create-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 22px 0; }
-      .create-head h2 { font-size: 20px; font-weight: 700; }
-      .create-close { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; }
-      .create-close:hover { background: var(--field); }
-      .create-item {
-        display: flex; align-items: flex-start; gap: 14px; width: calc(100% + 16px);
-        margin: 0 -8px 10px; padding: 12px 8px; border-radius: 16px; text-align: left;
-        transition: background 0.15s;
-      }
-      .create-item:hover, .create-item:focus-visible { background: #f3f3ee; }
-      .create-icon {
-        flex: 0 0 54px; width: 54px; height: 54px; border-radius: 16px;
-        display: grid; place-items: center; background: #e6e6e0;
-      }
-      .create-item b { display: block; font-size: 15px; font-weight: 500; margin-bottom: 4px; }
-      .create-item small { display: block; font-size: 13px; line-height: 1.4; color: #333; }
-      .badge-new { margin-left: 6px; padding: 2px 6px; border-radius: 6px; background: #dff5e8; font-size: 12px; font-weight: 500; color: #0a7a43; }
-
-      .create-open .create-panel { transform: none; visibility: visible; }
-      .create-open .main { margin-left: calc(var(--sidebar) + var(--create-w)); }
-      .create-open #createBtn { background: var(--field); }
-
-      @media (max-width: 1279px) and (min-width: 481px) {
-        :root { --create-w: 300px; }
-      }
-      @media (max-width: 480px) {
-        .create-panel { left: 0; width: 100%; bottom: 56px; }
-        .create-open .main { margin-left: 0; }
+        left: 0;
+        width: 100%;
+        bottom: 56px;
       }
 
-      /* ===== NOTIFICATIONS PANEL ===== */
+      .create-open .main {
+        margin-left: 0;
+      }
+    }
+
+    /* ===== NOTIFICATIONS PANEL ===== */
+    .notif-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: var(--sidebar);
+      width: var(--create-w);
+      z-index: 15;
+      padding: 16px 14px 24px 14px;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+      transform: translateX(-110%);
+      visibility: hidden;
+      transition: transform 0.2s ease, visibility 0.2s;
+    }
+
+    .notif-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 0 4px;
+    }
+
+    .notif-head h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .notif-sub {
+      margin: 26px 0 10px 4px;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .notif-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 4px;
+      border-radius: 16px;
+      transition: background 0.15s;
+    }
+
+    .notif-item:hover {
+      background: #f3f3ee;
+    }
+
+    .notif-item img {
+      flex: 0 0 64px;
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--field);
+    }
+
+    .notif-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 14px;
+    }
+
+    .notif-item.unread .notif-title {
+      font-weight: 700;
+    }
+
+    .notif-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .notif-meta button {
+      padding: 0 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--ink);
+    }
+
+    .notif-open .notif-panel {
+      transform: none;
+      visibility: visible;
+    }
+
+    .notif-open .main {
+      margin-left: calc(var(--sidebar) + var(--create-w));
+    }
+
+    .notif-open #notifBtn {
+      background: var(--field);
+    }
+
+    @media (max-width: 480px) {
       .notif-panel {
-        position: fixed; top: 0; bottom: 0; left: var(--sidebar); width: var(--create-w);
-        z-index: 15; padding: 16px 14px 24px 14px; overflow-y: auto;
-        border-right: 1px solid var(--line); background: var(--bg);
-        transform: translateX(-110%); visibility: hidden;
-        transition: transform 0.2s ease, visibility 0.2s;
-      }
-      .notif-head { display: flex; align-items: center; justify-content: space-between; padding: 0 0 0 4px; }
-      .notif-head h2 { font-size: 18px; font-weight: 700; }
-      .notif-sub { margin: 26px 0 10px 4px; font-size: 14px; font-weight: 400; }
-      .notif-item {
-        display: flex; align-items: center; gap: 10px; padding: 6px 4px;
-        border-radius: 16px; transition: background 0.15s;
-      }
-      .notif-item:hover { background: #f3f3ee; }
-      .notif-item img { flex: 0 0 64px; width: 64px; height: 64px; border-radius: 12px; object-fit: cover; background: var(--field); }
-      .notif-title { flex: 1; min-width: 0; font-size: 14px; }
-      .notif-item.unread .notif-title { font-weight: 700; }
-      .notif-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 12px; color: var(--muted); }
-      .notif-meta button { padding: 0 6px; font-weight: 700; letter-spacing: 1px; color: var(--ink); }
-
-      .notif-open .notif-panel { transform: none; visibility: visible; }
-      .notif-open .main { margin-left: calc(var(--sidebar) + var(--create-w)); }
-      .notif-open #notifBtn { background: var(--field); }
-      @media (max-width: 480px) {
-        .notif-panel { left: 0; width: 100%; bottom: 56px; }
-        .notif-open .main { margin-left: 0; }
+        left: 0;
+        width: 100%;
+        bottom: 56px;
       }
 
-      /* ===== MESSAGES PANEL ===== */
+      .notif-open .main {
+        margin-left: 0;
+      }
+    }
+
+    /* ===== MESSAGES PANEL ===== */
+    .msg-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: var(--sidebar);
+      width: var(--create-w);
+      z-index: 15;
+      padding: 20px 14px 24px;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+      transform: translateX(-110%);
+      visibility: hidden;
+      transition: transform 0.2s ease, visibility 0.2s;
+    }
+
+    .msg-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 12px;
+    }
+
+    .msg-head h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .msg-sub {
+      margin: 22px 0 8px 12px;
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 16px;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .msg-row:hover {
+      background: #f3f3ee;
+    }
+
+    .msg-new {
+      margin-top: 18px;
+      font-size: 16px;
+    }
+
+    .msg-circle {
+      flex: 0 0 54px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e6e6e0;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .msg-circle.red {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .msg-avatar {
+      flex: 0 0 54px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--field);
+    }
+
+    .msg-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .msg-text b {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .msg-text b.n {
+      font-weight: 500;
+    }
+
+    .msg-text small {
+      display: block;
+      margin-top: 3px;
+      font-size: 16px;
+    }
+
+    .msg-text .grey {
+      color: var(--muted);
+    }
+
+    .msg-time {
+      align-self: flex-start;
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .msg-invite {
+      margin-top: 26px;
+    }
+
+    .msg-open .msg-panel {
+      transform: none;
+      visibility: visible;
+    }
+
+    .msg-open .main {
+      margin-left: calc(var(--sidebar) + var(--create-w));
+    }
+
+    .msg-open #msgBtn {
+      background: var(--field);
+    }
+
+    @media (max-width: 480px) {
       .msg-panel {
-        position: fixed; top: 0; bottom: 0; left: var(--sidebar); width: var(--create-w);
-        z-index: 15; padding: 20px 14px 24px; overflow-y: auto;
-        border-right: 1px solid var(--line); background: var(--bg);
-        transform: translateX(-110%); visibility: hidden;
-        transition: transform 0.2s ease, visibility 0.2s;
-      }
-      .msg-head { display: flex; align-items: center; justify-content: space-between; padding-left: 12px; }
-      .msg-head h2 { font-size: 20px; font-weight: 700; }
-      .msg-sub { margin: 22px 0 8px 12px; font-size: 15px; font-weight: 400; }
-      .msg-row {
-        display: flex; align-items: center; gap: 12px; width: 100%;
-        padding: 8px 12px; border-radius: 16px; text-align: left; transition: background 0.15s;
-      }
-      .msg-row:hover { background: #f3f3ee; }
-      .msg-new { margin-top: 18px; font-size: 16px; }
-      .msg-circle {
-        flex: 0 0 54px; width: 54px; height: 54px; border-radius: 50%;
-        display: grid; place-items: center; background: #e6e6e0; font-size: 20px; font-weight: 500;
-      }
-      .msg-circle.red { background: var(--red); color: #fff; }
-      .msg-avatar { flex: 0 0 54px; width: 54px; height: 54px; border-radius: 50%; object-fit: cover; background: var(--field); }
-      .msg-text { flex: 1; min-width: 0; }
-      .msg-text b { display: block; font-size: 16px; font-weight: 600; }
-      .msg-text b.n { font-weight: 500; }
-      .msg-text small { display: block; margin-top: 3px; font-size: 16px; }
-      .msg-text .grey { color: var(--muted); }
-      .msg-time { align-self: flex-start; margin-top: 14px; font-size: 14px; color: var(--muted); }
-      .msg-invite { margin-top: 26px; }
-
-      .msg-open .msg-panel { transform: none; visibility: visible; }
-      .msg-open .main { margin-left: calc(var(--sidebar) + var(--create-w)); }
-      .msg-open #msgBtn { background: var(--field); }
-      @media (max-width: 480px) {
-        .msg-panel { left: 0; width: 100%; bottom: 56px; }
-        .msg-open .main { margin-left: 0; }
+        left: 0;
+        width: 100%;
+        bottom: 56px;
       }
 
-      /* ===== SETTINGS & SUPPORT PANEL ===== */
-      :root { --set-w: 430px; }
+      .msg-open .main {
+        margin-left: 0;
+      }
+    }
+
+    /* ===== SETTINGS & SUPPORT PANEL ===== */
+    :root {
+      --set-w: 430px;
+    }
+
+    .set-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: var(--sidebar);
+      width: var(--set-w);
+      z-index: 15;
+      padding: 20px 14px 24px;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+      transform: translateX(-110%);
+      visibility: hidden;
+      transition: transform 0.2s ease, visibility 0.2s;
+    }
+
+    .set-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 8px 12px;
+    }
+
+    .set-head h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .set-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    a.set-row:hover {
+      background: #f3f3ee;
+    }
+
+    .set-row.on {
+      background: #f0f0eb;
+    }
+
+    .set-row .ext {
+      font-weight: 400;
+      font-size: 18px;
+      margin-right: 6px;
+    }
+
+    .set-row select {
+      max-width: 190px;
+      padding: 6px 10px;
+      border: 1px solid #cdcdc7;
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .set-label {
+      margin: 18px 0 4px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .set-links {
+      margin: 6px 0 6px 12px;
+      font-size: 15px;
+    }
+
+    .set-links a {
+      margin-right: 6px;
+      color: #2347c5;
+      text-decoration: none;
+    }
+
+    .set-links a:hover {
+      text-decoration: underline;
+    }
+
+    .set-open .set-panel {
+      transform: none;
+      visibility: visible;
+    }
+
+    .set-open .main {
+      margin-left: calc(var(--sidebar) + var(--set-w));
+    }
+
+    .set-open #settingsBtn {
+      background: var(--field);
+    }
+
+    @media (max-width: 1279px) and (min-width: 481px) {
+      :root {
+        --set-w: 360px;
+      }
+    }
+
+    @media (max-width: 480px) {
       .set-panel {
-        position: fixed; top: 0; bottom: 0; left: var(--sidebar); width: var(--set-w);
-        z-index: 15; padding: 20px 14px 24px; overflow-y: auto;
-        border-right: 1px solid var(--line); background: var(--bg);
-        transform: translateX(-110%); visibility: hidden;
-        transition: transform 0.2s ease, visibility 0.2s;
-      }
-      .set-head { display: flex; align-items: center; justify-content: space-between; padding: 0 0 8px 12px; }
-      .set-head h2 { font-size: 20px; font-weight: 700; }
-      .set-row {
-        display: flex; align-items: center; justify-content: space-between; gap: 10px;
-        padding: 10px 12px; border-radius: 12px; font-size: 16px; color: var(--ink); text-decoration: none;
-      }
-      a.set-row:hover { background: #f3f3ee; }
-      .set-row.on { background: #f0f0eb; }
-      .set-row .ext { font-weight: 400; font-size: 18px; margin-right: 6px; }
-      .set-row select {
-        max-width: 190px; padding: 6px 10px; border: 1px solid #cdcdc7; border-radius: 12px;
-        background: var(--bg); color: var(--ink); font: inherit; font-size: 15px; cursor: pointer;
-      }
-      .set-label { margin: 18px 0 4px 12px; font-size: 13px; font-weight: 600; color: #333; }
-      .set-links { margin: 6px 0 6px 12px; font-size: 15px; }
-      .set-links a { margin-right: 6px; color: #2347c5; text-decoration: none; }
-      .set-links a:hover { text-decoration: underline; }
-
-      .set-open .set-panel { transform: none; visibility: visible; }
-      .set-open .main { margin-left: calc(var(--sidebar) + var(--set-w)); }
-      .set-open #settingsBtn { background: var(--field); }
-      @media (max-width: 1279px) and (min-width: 481px) { :root { --set-w: 360px; } }
-      @media (max-width: 480px) {
-        .set-panel { left: 0; width: 100%; bottom: 56px; }
-        .set-open .main { margin-left: 0; }
+        left: 0;
+        width: 100%;
+        bottom: 56px;
       }
 
-      /* Khmer font */
-      body.lang-km, body.lang-km button, body.lang-km input, body.lang-km select {
-        /* English letters keep your original font; Khmer letters use Kantumruy Pro */
-        font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Kantumruy Pro", sans-serif;
+      .set-open .main {
+        margin-left: 0;
+      }
+    }
+
+    /* Khmer font */
+    body.lang-km,
+    body.lang-km button,
+    body.lang-km input,
+    body.lang-km select {
+      /* English letters keep your original font; Khmer letters use Kantumruy Pro */
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Kantumruy Pro", sans-serif;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      margin-top: 40px;
+      padding: 44px 38px 22px;
+      background: #1b1b1b;
+      color: #fff;
+    }
+
+    .foot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 36px 28px;
+    }
+
+    .foot-col h3 {
+      margin-bottom: 22px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .foot-img {
+      display: block;
+      width: 200px;
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #2a2a2a;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+
+    .foot-name {
+      margin-top: 12px;
+      font-size: 15px;
+    }
+
+    .foot-contact {
+      list-style: none;
+    }
+
+    .foot-contact li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .foot-contact svg {
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
+    }
+
+    .foot-contact a,
+    .foot-hours .web {
+      color: #e8e8e8;
+      text-decoration: none;
+    }
+
+    .foot-contact a:hover,
+    .foot-hours .web:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    .social {
+      display: flex;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .soc {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .soc svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .soc:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    .soc.fb {
+      background: #1877f2;
+    }
+
+    .soc.ig {
+      background: linear-gradient(45deg, #f9a43e, #e1306c 55%, #833ab4);
+    }
+
+    .soc.tg {
+      background: #27a7e7;
+    }
+
+    .soc.gm {
+      background: #ea4335;
+    }
+
+    .foot-hours .day {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .foot-hours .time {
+      margin: 0 0 22px;
+      font-size: 13px;
+      color: #ddd;
+    }
+
+    .foot-hours .web {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .foot-copy {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+      text-align: center;
+      font-size: 13px;
+      color: #9a9a9a;
+    }
+
+    @media (max-width: 480px) {
+      .site-footer {
+        padding: 32px 20px 20px;
       }
 
-      /* ===== FOOTER ===== */
-      .site-footer { margin-top: 40px; padding: 44px 38px 22px; background: #1b1b1b; color: #fff; }
-      .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 36px 28px; }
-      .foot-col h3 { margin-bottom: 22px; font-size: 17px; font-weight: 700; }
       .foot-img {
-        display: block; width: 200px; max-width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
-        border-radius: 16px; background: #2a2a2a; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+        width: 160px;
       }
-      .foot-name { margin-top: 12px; font-size: 15px; }
-      .foot-contact { list-style: none; }
-      .foot-contact li { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 14px; }
-      .foot-contact svg { flex: 0 0 22px; width: 22px; height: 22px; }
-      .foot-contact a, .foot-hours .web { color: #e8e8e8; text-decoration: none; }
-      .foot-contact a:hover, .foot-hours .web:hover { color: #fff; text-decoration: underline; }
-      .social { display: flex; gap: 12px; margin-top: 26px; }
-      .soc {
-        width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
-        transition: transform 0.15s, box-shadow 0.15s;
-      }
-      .soc svg { width: 22px; height: 22px; }
-      .soc:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5); }
-      .soc.fb { background: #1877f2; }
-      .soc.ig { background: linear-gradient(45deg, #f9a43e, #e1306c 55%, #833ab4); }
-      .soc.tg { background: #27a7e7; }
-      .soc.gm { background: #ea4335; }
-      .foot-hours .day { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
-      .foot-hours .time { margin: 0 0 22px; font-size: 13px; color: #ddd; }
-      .foot-hours .web { display: inline-block; margin-top: 4px; font-size: 14px; }
-      .foot-copy { margin-top: 36px; padding-top: 20px; border-top: 1px solid #333; text-align: center; font-size: 13px; color: #9a9a9a; }
-      @media (max-width: 480px) {
-        .site-footer { padding: 32px 20px 20px; }
-        .foot-img { width: 160px; }
-      }
-      .avatar {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    overflow: hidden;
-}
+    }
 
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-}
-    </style>
-  </head>
-  <body>
-    <div class="search-overlay" id="searchOverlay"></div>
+    .avatar {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      overflow: hidden;
+    }
 
-    <nav class="sidebar" aria-label="Main navigation">
-      <a class="logo" href="#" aria-label="Pinterest home"
-        ><img src="Pinterest.svg.webp" alt="Pinterest logo" width="32" height="32"
-      /></a>
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+  </style>
+</head>
 
-      <button class="icon-btn" type="button" aria-label="Home" aria-expanded="false"
-        onclick="window.location.href='index.html'">
-        <svg class="i" viewBox="0 0 24 24" style="fill: currentColor; stroke: none">
-          <path d="M12 3C7 3 3.5 7 3.5 12v8h17v-8C20.5 7 17 3 12 3z" />
-        </svg>
-        <span class="icon-text">Home</span>
-      </button>
+<body>
+  <div class="search-overlay" id="searchOverlay"></div>
 
-      <button class="icon-btn" type="button" aria-label="Explore" aria-expanded="false"
-        onclick="window.location.href='explore.html'">
+  <nav class="sidebar" aria-label="Main navigation">
+    <a class="logo" href="#" aria-label="Pinterest home"><img src="Pinterest.svg.webp" alt="Pinterest logo" width="32"
+        height="32" /></a>
+
+    <button class="icon-btn" type="button" aria-label="Home" aria-expanded="false"
+      onclick="window.location.href='index.html'">
+      <svg class="i" viewBox="0 0 24 24" style="fill: currentColor; stroke: none">
+        <path d="M12 3C7 3 3.5 7 3.5 12v8h17v-8C20.5 7 17 3 12 3z" />
+      </svg>
+      <span class="icon-text">Home</span>
+    </button>
+
+    <button class="icon-btn" type="button" aria-label="Explore" aria-expanded="false"
+      onclick="window.location.href='explore.html'">
+      <svg class="i" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="4" />
+        <path d="M3 12h18M12 3v18" />
+      </svg>
+      <span class="icon-text">Explore</span>
+    </button>
+
+    <button class="icon-btn" type="button" aria-label="Create" id="createBtn" aria-expanded="false">
+      <svg class="i" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="4" />
+        <path d="M12 8v8M8 12h8" />
+      </svg>
+      <span class="icon-text">Create</span>
+    </button>
+
+    <button class="icon-btn" type="button" aria-label="Updates" id="notifBtn" aria-expanded="false">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z" />
+        <path d="M10 21h4" />
+      </svg>
+      <span class="dot" aria-hidden="true"></span>
+      <span class="icon-text">Updates</span>
+    </button>
+
+    <button class="icon-btn" type="button" aria-label="Messages" id="msgBtn" aria-expanded="false">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="M12 3a9 9 0 1 0 0 18h8l-2-3.5A9 9 0 0 0 12 3z" />
+        <path d="M8.5 12h.01M12 12h.01M15.5 12h.01" />
+      </svg>
+      <span class="icon-text">Messages</span>
+    </button>
+
+    <button class="icon-btn" type="button" aria-label="Filters" onclick="window.location.href='filter.html'"
+      aria-expanded="false">
+      <svg class="i" viewBox="0 0 24 24">
+        <path d="M5 3v18M12 3v18M19 3v18M3 8h4M10 15h4M17 10h4" />
+      </svg>
+      <span class="icon-text">Filters</span>
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="icon-btn" type="button" aria-label="Settings" id="settingsBtn" aria-expanded="false">
+      <svg class="i" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
+      </svg>
+      <span class="icon-text">Settings</span>
+    </button>
+  </nav>
+
+  <!-- Create panel -->
+  <aside class="create-panel" id="createPanel" aria-label="Create">
+    <div class="create-head">
+      <h2>Create</h2>
+      <button class="create-close" id="createClose" type="button" aria-label="Close">
         <svg class="i" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="18" height="18" rx="4" />
-          <path d="M3 12h18M12 3v18" />
+          <path d="M6 6l12 12M18 6L6 18" />
         </svg>
-        <span class="icon-text">Explore</span>
       </button>
+    </div>
 
-      <button class="icon-btn" type="button" aria-label="Create" id="createBtn" aria-expanded="false">
-        <svg class="i" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="18" height="18" rx="4" />
-          <path d="M12 8v8M8 12h8" />
-        </svg>
-        <span class="icon-text">Create</span>
-      </button>
+    <button class="create-item" type="button">
+      <span class="create-icon"><svg class="i" viewBox="0 0 24 24">
+          <path d="M9 3h6M10 3v6l-3 4h10l-3-4V3M12 13v8" />
+        </svg></span>
+      <span><b>Pin</b><small>Post your photos or videos and add links, stickers, effects and more</small></span>
+    </button>
 
-      <button class="icon-btn" type="button" aria-label="Updates" id="notifBtn" aria-expanded="false">
-        <svg class="i" viewBox="0 0 24 24">
-          <path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z" />
-          <path d="M10 21h4" />
-        </svg>
-        <span class="dot" aria-hidden="true"></span>
-        <span class="icon-text">Updates</span>
-      </button>
+    <button class="create-item" type="button">
+      <span class="create-icon"><svg class="i" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="16" rx="3" />
+          <path d="M10 4v16M10 12h11" />
+        </svg></span>
+      <span><b>Board</b><small>Organize a collection of your favorite Pins by creating a board</small></span>
+    </button>
 
-      <button class="icon-btn" type="button" aria-label="Messages" id="msgBtn" aria-expanded="false">
-        <svg class="i" viewBox="0 0 24 24">
-          <path d="M12 3a9 9 0 1 0 0 18h8l-2-3.5A9 9 0 0 0 12 3z" />
-          <path d="M8.5 12h.01M12 12h.01M15.5 12h.01" />
-        </svg>
-        <span class="icon-text">Messages</span>
-      </button>
+    <button class="create-item" type="button">
+      <span class="create-icon"><svg class="i" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="14" height="16" rx="3" />
+          <path d="M8 12l3-3 4 5M18 9l3 2-3 9" />
+        </svg></span>
+      <span><b>Collage</b><small>Mix and match ideas to build your vision and create something new</small></span>
+    </button>
 
-      <button class="icon-btn" type="button" aria-label="Filters" onclick="window.location.href='filter.html'" aria-expanded="false">
-        <svg class="i" viewBox="0 0 24 24">
-          <path d="M5 3v18M12 3v18M19 3v18M3 8h4M10 15h4M17 10h4" />
-        </svg>
-        <span class="icon-text">Filters</span>
-      </button>
+    <button class="create-item" type="button">
+      <span class="create-icon"><svg class="i" viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="14" rx="3" />
+          <path d="M4 7l8 6 8-6" />
+        </svg></span>
+      <span><b>Card <span class="badge-new">New</span></b><small>Choose a Pin, add a message, and send it as a digital
+          card to someone special</small></span>
+    </button>
+  </aside>
 
-      <div class="spacer"></div>
-
-      <button class="icon-btn" type="button" aria-label="Settings" id="settingsBtn" aria-expanded="false">
-        <svg class="i" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
-        </svg>
-        <span class="icon-text">Settings</span>
-      </button>
-    </nav>
-
-    <!-- Create panel -->
-    <aside class="create-panel" id="createPanel" aria-label="Create">
-      <div class="create-head">
-        <h2>Create</h2>
-        <button class="create-close" id="createClose" type="button" aria-label="Close">
-          <svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
-
-      <button class="create-item" type="button">
-        <span class="create-icon"><svg class="i" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-3 4h10l-3-4V3M12 13v8" /></svg></span>
-        <span><b>Pin</b><small>Post your photos or videos and add links, stickers, effects and more</small></span>
-      </button>
-
-      <button class="create-item" type="button">
-        <span class="create-icon"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M10 4v16M10 12h11" /></svg></span>
-        <span><b>Board</b><small>Organize a collection of your favorite Pins by creating a board</small></span>
-      </button>
-
-      <button class="create-item" type="button">
-        <span class="create-icon"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="14" height="16" rx="3" /><path d="M8 12l3-3 4 5M18 9l3 2-3 9" /></svg></span>
-        <span><b>Collage</b><small>Mix and match ideas to build your vision and create something new</small></span>
-      </button>
-
-      <button class="create-item" type="button">
-        <span class="create-icon"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M4 7l8 6 8-6" /></svg></span>
-        <span><b>Card <span class="badge-new">New</span></b><small>Choose a Pin, add a message, and send it as a digital card to someone special</small></span>
-      </button>
-    </aside>
-
-    <!-- Notifications panel -->
-    <aside class="notif-panel" id="notifPanel" aria-label="Notifications">
+  <!-- Notifications panel -->
+  <aside class="notif-panel" id="notifPanel" aria-label="Notifications">
     <div class="notif-head">
       <h2>Notifications</h2>
       <button class="create-close" id="notifClose" type="button" aria-label="Close">
@@ -596,933 +1448,942 @@
           aria-label="More options">&middot;&middot;&middot;</button></span>
     </div>
   </aside>
-    <!-- Messages panel -->
-    <aside class="msg-panel" id="msgPanel" aria-label="Messages panel">
-      <div class="msg-head">
-        <h2>Messages</h2>
-        <button class="create-close" id="msgClose" type="button" aria-label="Close">
-          <svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
+  <!-- Messages panel -->
+  <aside class="msg-panel" id="msgPanel" aria-label="Messages panel">
+    <div class="msg-head">
+      <h2>Messages</h2>
+      <button class="create-close" id="msgClose" type="button" aria-label="Close">
+        <svg class="i" viewBox="0 0 24 24">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
 
-      <button class="msg-row msg-new" type="button">
-        <span class="msg-circle red"><svg class="i" viewBox="0 0 24 24"><path d="M12 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-6" /><path d="M17.500 3.500a2.100 2.100 0 0 1 3 3L12 15l-4 1 1-4z" /></svg></span>
-        <b>New message</b>
+    <button class="msg-row msg-new" type="button">
+      <span class="msg-circle red"><svg class="i" viewBox="0 0 24 24">
+          <path d="M12 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-6" />
+          <path d="M17.500 3.500a2.100 2.100 0 0 1 3 3L12 15l-4 1 1-4z" />
+        </svg></span>
+      <b>New message</b>
+    </button>
+
+    <h3 class="msg-sub">Messages</h3>
+    <button class="msg-row" type="button">
+      <img class="msg-avatar" src="rub/1.jpg" alt="" />
+      <span class="msg-text"><b class="n">Saeed</b><small class="grey">You sent a Pin</small></span>
+      <span class="msg-time">3y</span>
+    </button>
+
+    <h3 class="msg-sub">Suggested</h3>
+    <button class="msg-row" type="button">
+      <span class="msg-circle letter">T</span>
+      <span class="msg-text"><b>Takama Idrissi</b><small>@takamaidrissi1997</small></span>
+    </button>
+    <button class="msg-row" type="button">
+      <img class="msg-avatar" src="rub/2.jpg" alt="" />
+      <span class="msg-text"><b>Chlodwald K.</b><small>@chlodwald</small></span>
+    </button>
+
+    <button class="msg-row msg-invite" type="button">
+      <span class="msg-circle"><svg class="i" viewBox="0 0 24 24">
+          <circle cx="9" cy="8" r="3.500" />
+          <path d="M3 20c0-3.300 2.700-6 6-6M17 14v6M14 17h6" />
+        </svg></span>
+      <span class="msg-text"><b>Invite your friends</b><small class="grey">Connect to start chatting</small></span>
+    </button>
+  </aside>
+
+  <!-- Settings & Support panel -->
+  <aside class="set-panel" id="setPanel" aria-label="Settings and support">
+    <div class="set-head">
+      <h2>Settings &amp; Support</h2>
+      <button class="create-close" id="setClose" type="button" aria-label="Close">
+        <svg class="i" viewBox="0 0 24 24">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+
+    <a class="set-row on" href="filter.html"><span>Settings</span></a>
+    <a class="set-row" href="filter.html"><span>Refine your recommendations</span></a>
+    <a class="set-row" href="#"><span>Link to Pinterest</span></a>
+    <a class="set-row" href="#"><span>Reports and violations center</span></a>
+    <a class="set-row" href="#"><span>Be a beta tester</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+
+    <div class="set-row lang">
+      <span>Language</span>
+      <select id="langSelect" aria-label="Language">
+        <option value="en">English</option>
+        <option value="km">ភាសាខ្មែរ (Khmer)</option>
+      </select>
+    </div>
+
+    <h3 class="set-label">Support</h3>
+    <a class="set-row" href="#"><span>Help center</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+    <a class="set-row" href="#"><span>Create widget</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+    <a class="set-row" href="#"><span>Removals</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+    <a class="set-row" href="#"><span>Personalized Ads</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+    <a class="set-row" href="#"><span>Your privacy rights</span></a>
+    <a class="set-row" href="#"><span>Privacy policy</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+    <a class="set-row" href="#"><span>Terms of service</span><b class="ext" aria-hidden="true">&#8599;</b></a>
+
+    <h3 class="set-label">Resources</h3>
+    <p class="set-links"><a href="#">About</a> <a href="#">Blog</a> <a href="#">Businesses</a></p>
+    <p class="set-links"><a href="#">Careers</a> <a href="#">Developers</a></p>
+  </aside>
+
+
+
+
+
+  <div class="main">
+    <header class="topbar">
+      <label class="search">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-5-5" />
+        </svg>
+        <input id="searchInput" type="search" placeholder="Search" aria-label="Search" autocomplete="off" />
+      </label>
+
+      <button class="tool" type="button" aria-label="Search by image">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+          <circle cx="12" cy="12" r="3.5" />
+        </svg>
+        <span class="icon-text">Search by image</span>
       </button>
 
-      <h3 class="msg-sub">Messages</h3>
-      <button class="msg-row" type="button">
-        <img class="msg-avatar" src="rub/1.jpg" alt="" />
-        <span class="msg-text"><b class="n">Saeed</b><small class="grey">You sent a Pin</small></span>
-        <span class="msg-time">3y</span>
+      <button class="tool" type="button" aria-label="Voice search">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="12" rx="3" />
+          <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+        </svg>
+        <span class="icon-text">Voice search</span>
       </button>
 
-      <h3 class="msg-sub">Suggested</h3>
-      <button class="msg-row" type="button">
-        <span class="msg-circle letter">T</span>
-        <span class="msg-text"><b>Takama Idrissi</b><small>@takamaidrissi1997</small></span>
-      </button>
-      <button class="msg-row" type="button">
-        <img class="msg-avatar" src="rub/2.jpg" alt="" />
-        <span class="msg-text"><b>Chlodwald K.</b><small>@chlodwald</small></span>
+      <button class="avatar" type="button" aria-label="Account menu">
+        <a aria-hidden="true"><img src="dragon.jpg" alt="Pinterest logo" width="32" height="32" /></a>
       </button>
 
-      <button class="msg-row msg-invite" type="button">
-        <span class="msg-circle"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.500" /><path d="M3 20c0-3.300 2.700-6 6-6M17 14v6M14 17h6" /></svg></span>
-        <span class="msg-text"><b>Invite your friends</b><small class="grey">Connect to start chatting</small></span>
-      </button>
-    </aside>
-
-    <!-- Settings & Support panel -->
-    <aside class="set-panel" id="setPanel" aria-label="Settings and support">
-      <div class="set-head">
-        <h2>Settings &amp; Support</h2>
-        <button class="create-close" id="setClose" type="button" aria-label="Close">
-          <svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
-
-      <a class="set-row on" href="filter.html"><span>Settings</span></a>
-      <a class="set-row" href="filter.html"><span>Refine your recommendations</span></a>
-      <a class="set-row" href="#"><span>Link to Pinterest</span></a>
-      <a class="set-row" href="#"><span>Reports and violations center</span></a>
-      <a class="set-row" href="#"><span>Be a beta tester</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-
-      <div class="set-row lang">
-        <span>Language</span>
-        <select id="langSelect" aria-label="Language">
-          <option value="en">English</option>
-          <option value="km">ភាសាខ្មែរ (Khmer)</option>
-        </select>
-      </div>
-
-      <h3 class="set-label">Support</h3>
-      <a class="set-row" href="#"><span>Help center</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-      <a class="set-row" href="#"><span>Create widget</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-      <a class="set-row" href="#"><span>Removals</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-      <a class="set-row" href="#"><span>Personalized Ads</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-      <a class="set-row" href="#"><span>Your privacy rights</span></a>
-      <a class="set-row" href="#"><span>Privacy policy</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-      <a class="set-row" href="#"><span>Terms of service</span><b class="ext" aria-hidden="true">&#8599;</b></a>
-
-      <h3 class="set-label">Resources</h3>
-      <p class="set-links"><a href="#">About</a> <a href="#">Blog</a> <a href="#">Businesses</a></p>
-      <p class="set-links"><a href="#">Careers</a> <a href="#">Developers</a></p>
-    </aside>
-
-
-
-
-
-    <div class="main">
-      <header class="topbar">
-        <label class="search">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-5-5" />
-          </svg>
-          <input id="searchInput" type="search" placeholder="Search" aria-label="Search" autocomplete="off" />
-        </label>
-
-        <button class="tool" type="button" aria-label="Search by image">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
-            <circle cx="12" cy="12" r="3.5" />
-          </svg>
-          <span class="icon-text">Search by image</span>
-        </button>
-
-        <button class="tool" type="button" aria-label="Voice search">
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="9" y="3" width="6" height="12" rx="3" />
-            <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
-          </svg>
-          <span class="icon-text">Voice search</span>
-        </button>
-
-        <button class="avatar" type="button" aria-label="Account menu">
-          <a aria-hidden="true"
-            ><img src="dragon.jpg" alt="Pinterest logo" width="32" height="32"
-          /></a>
-        </button>
-
-        <!-- Search panel -->
-        <div class="search-panel" id="searchPanel">
-          <h2>Recent searches</h2>
-          <div class="sugg-grid">
-        <button class="sugg" type="button"><img src="rub/1.jpg" alt="" /><span>pfp for instagram</span></button>
-        <button class="sugg" type="button"><img src="rub/2.jpg" alt="" /><span>Game design</span></button>
-        <button class="sugg" type="button"><img src="rub/3.jpg" alt="" /><span>display stand pepsi</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/17.jpg" alt="" /><span>Meme khmer</span></button>
-        <button class="sugg" type="button"><img src="rub/dog/2.jpg" alt="" /><span>Dogs</span></button>
-        <button class="sugg" type="button"><img src="rub/setec.png" alt="" /><span>Logo</span></button>
-        <button class="sugg" type="button"><img src="rub/7.jpg" alt="" /><span>poster food</span></button>
-        <button class="sugg" type="button"><img src="rub/cat/2.jpg" /><span>cat</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/20.jpg" /><span>Lol</span></button>
-        <button class="sugg" type="button"><img src="rub/14.jpg" alt="" /><span>Monkey</span></button>
-          </div>
-
-          <h2>Ideas for you</h2>
-          <div class="sugg-grid">
-        <button class="sugg" type="button"><img src="rub/11.jpg" alt="" /><span>Son goku</span></button>
-        <button class="sugg" type="button"><img src="rub/12.jpg" alt="" /><span>Dragon ball wallpapers</span></button>
-        <button class="sugg" type="button"><img src="rub/13.jpg" alt="" /><span>Poster layout</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/17.jpg" alt="" /><span>ដល់ក</span></button>
-        <button class="sugg" type="button"><img src="rub/cat/3.jpg" alt="" /><span>Sad</span></button>
-        <button class="sugg" type="button"><img src="rub/cat/1.jpg" /><span>Funny cats</span></button>
-        <button class="sugg" type="button"><img src="rub/17.jpg" alt="" /><span>Ronaldo prime</span></button>
-        <button class="sugg" type="button"><img src="rub/18.jpg" alt="" /><span>Galaxy wallpaper</span></button>
-          </div>
-
-          <h2>Popular on Pinterest</h2>
-          <div class="sugg-grid">
-        <button class="sugg" type="button"><img src="rub/graphy/21.jpg" alt="" /><span>4k wallpaper</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/22.jpg" alt="" /><span>Arts wallpaper</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/23.jpg" alt="" /><span>Clouds wallpaper</span></button>
-        <button class="sugg" type="button"><img src="rub/graphy/24.jpg" alt="" /><span>Anime</span></button>
-          </div>
+      <!-- Search panel -->
+      <div class="search-panel" id="searchPanel">
+        <h2>Recent searches</h2>
+        <div class="sugg-grid">
+          <button class="sugg" type="button"><img src="rub/1.jpg" alt="" /><span>pfp for instagram</span></button>
+          <button class="sugg" type="button"><img src="rub/2.jpg" alt="" /><span>Game design</span></button>
+          <button class="sugg" type="button"><img src="rub/3.jpg" alt="" /><span>display stand pepsi</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/17.jpg" alt="" /><span>Meme khmer</span></button>
+          <button class="sugg" type="button"><img src="rub/dog/2.jpg" alt="" /><span>Dogs</span></button>
+          <button class="sugg" type="button"><img src="rub/setec.png" alt="" /><span>Logo</span></button>
+          <button class="sugg" type="button"><img src="rub/7.jpg" alt="" /><span>poster food</span></button>
+          <button class="sugg" type="button"><img src="rub/cat/2.jpg" /><span>cat</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/20.jpg" /><span>Lol</span></button>
+          <button class="sugg" type="button"><img src="rub/14.jpg" alt="" /><span>Monkey</span></button>
         </div>
-      </header>
 
-      <div class="tabs"><span class="tab">All</span></div>
+        <h2>Ideas for you</h2>
+        <div class="sugg-grid">
+          <button class="sugg" type="button"><img src="rub/11.jpg" alt="" /><span>Son goku</span></button>
+          <button class="sugg" type="button"><img src="rub/12.jpg" alt="" /><span>Dragon ball wallpapers</span></button>
+          <button class="sugg" type="button"><img src="rub/13.jpg" alt="" /><span>Poster layout</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/17.jpg" alt="" /><span>ដល់ក</span></button>
+          <button class="sugg" type="button"><img src="rub/cat/3.jpg" alt="" /><span>Sad</span></button>
+          <button class="sugg" type="button"><img src="rub/cat/1.jpg" /><span>Funny cats</span></button>
+          <button class="sugg" type="button"><img src="rub/17.jpg" alt="" /><span>Ronaldo prime</span></button>
+          <button class="sugg" type="button"><img src="rub/18.jpg" alt="" /><span>Galaxy wallpaper</span></button>
+        </div>
 
-      <main class="feed">
-        <!-- Replace these sample paths with your own images. -->
+        <h2>Popular on Pinterest</h2>
+        <div class="sugg-grid">
+          <button class="sugg" type="button"><img src="rub/graphy/21.jpg" alt="" /><span>4k wallpaper</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/22.jpg" alt="" /><span>Arts wallpaper</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/23.jpg" alt="" /><span>Clouds
+              wallpaper</span></button>
+          <button class="sugg" type="button"><img src="rub/graphy/24.jpg" alt="" /><span>Anime</span></button>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs"><span class="tab">All</span></div>
+
+    <main class="feed">
+      <!-- Replace these sample paths with your own images. -->
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/dai2.jpg" alt="Photo 1" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/1.jpg" alt="Photo 1" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/fb.jpg" alt="Photo 1" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/17.jpg" alt="Photo 1" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/me.jpg" alt="Photo 1" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="dragon.jpg" alt="Photo 2" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/3.jpg" alt="Photo 3" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/4.jpg" alt="Photo 4" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/4.jpg" alt="Photo 5" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/cat/3.jpg" alt="Photo 7" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/8.jpg" alt="Photo 8" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/9.jpg" alt="Photo 9" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/10.jpg" alt="Photo 10" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/3.jpg" alt="Photo 10" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/11.jpg" alt="Photo 11" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/12.jpg" alt="Photo 12" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/13.jpg" alt="Photo 13" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/14.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/1.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/2.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/3.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/4.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/5.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/6.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/7.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/8.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/9.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/10.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/11.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/graphy/12.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/5.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/6.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/7.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/8.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/9.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/10.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/11.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/12.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/13.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/14.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/15.jpg" alt="Photo 15" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/16.jpg" alt="Photo 16" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/17.jpg" alt="Photo 17" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/18.jpg" alt="Photo 18" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/19.jpg" alt="Photo 19" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/20.jpg" alt="Photo 20" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/15.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/meow.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/17.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/18.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/19.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/20.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/21.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/22.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/23.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/24.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/1.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/26.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/27.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/28.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/29.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/30.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/31.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/32.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/33.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/34.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/35.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/all photo/36.jpg" alt="Photo 14" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/21.jpg" alt="Photo 21" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/22.jpg" alt="Photo 22" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/23.jpg" alt="Photo 23" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/24.jpg" alt="Photo 24" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/25.jpg" alt="Photo 25" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/26.jpg" alt="Photo 26" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/27.jpg" alt="Photo 27" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/28.jpg" alt="Photo 28" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/29.jpg" alt="Photo 29" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/30.jpg" alt="Photo 30" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/31.jpg" alt="Photo 31" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/32.jpg" alt="Photo 32" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/33.jpg" alt="Photo 33" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/34.jpg" alt="Photo 34" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/35.jpg" alt="Photo 35" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/36.jpg" alt="Photo 36" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/37.jpg" alt="Photo 37" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
+      </article>
+      <article class="pin">
+        <button class="save" type="button">Save</button>
+        <div class="thumb-wrap">
+          <img class="thumb" src="rub/39.jpg" alt="Photo 39" />
+        </div>
+        <button class="more" type="button" aria-label="More options">
+          &middot;&middot;&middot;
+        </button>
         <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/dai2.jpg" alt="Photo 1" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/1.jpg" alt="Photo 1" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/fb.jpg" alt="Photo 1" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/17.jpg" alt="Photo 1" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/me.jpg" alt="Photo 1" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="dragon.jpg" alt="Photo 2" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/3.jpg" alt="Photo 3" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/4.jpg" alt="Photo 4" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/4.jpg" alt="Photo 5" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/cat/3.jpg" alt="Photo 7" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/8.jpg" alt="Photo 8" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/9.jpg" alt="Photo 9" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/10.jpg" alt="Photo 10" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/3.jpg" alt="Photo 10" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/11.jpg" alt="Photo 11" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/12.jpg" alt="Photo 12" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/13.jpg" alt="Photo 13" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/14.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/1.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/2.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/3.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/4.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/5.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/6.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/7.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/8.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/9.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/10.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/11.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/graphy/12.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/5.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/6.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/7.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/8.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/9.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/10.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/11.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/12.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/13.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/14.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/15.jpg" alt="Photo 15" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/16.jpg" alt="Photo 16" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/17.jpg" alt="Photo 17" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/18.jpg" alt="Photo 18" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/19.jpg" alt="Photo 19" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/20.jpg" alt="Photo 20" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/15.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/16.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/17.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/18.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/19.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/20.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/21.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/22.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/23.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/24.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/1.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/26.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/27.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/28.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/29.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/30.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/31.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/32.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/33.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/34.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/35.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/all photo/36.jpg" alt="Photo 14" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/21.jpg" alt="Photo 21" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/22.jpg" alt="Photo 22" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/23.jpg" alt="Photo 23" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/24.jpg" alt="Photo 24" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/25.jpg" alt="Photo 25" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/26.jpg" alt="Photo 26" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/27.jpg" alt="Photo 27" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/28.jpg" alt="Photo 28" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/29.jpg" alt="Photo 29" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/30.jpg" alt="Photo 30" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/31.jpg" alt="Photo 31" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/32.jpg" alt="Photo 32" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/33.jpg" alt="Photo 33" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/34.jpg" alt="Photo 34" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/35.jpg" alt="Photo 35" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/36.jpg" alt="Photo 36" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/37.jpg" alt="Photo 37" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-        </article>
-        <article class="pin">
-          <button class="save" type="button">Save</button>
-          <div class="thumb-wrap">
-            <img class="thumb" src="rub/39.jpg" alt="Photo 39" />
-          </div>
-          <button class="more" type="button" aria-label="More options">
-            &middot;&middot;&middot;
-          </button>
-          <article class="pin">
           <button class="save" type="button">Save</button>
           <div class="thumb-wrap">
             <img class="thumb" src="rub/40.jpg" alt="Photo 40" />
@@ -1540,166 +2401,193 @@
             &middot;&middot;&middot;
           </button>
         </article>
-        </article>
-      </main>
-          <!-- Footer -->
-      <footer class="site-footer">
-        <div class="foot-grid">
-          <div class="foot-col">
-            <h3>My Profile</h3>
-            <img class="foot-img" src="rub/me.jpg" alt="Chhery Vitou" />
-            <p class="foot-name">Chhery Vitou</p>
-          </div>
-          <div class="foot-col">
-            <h3>My Teacher</h3>
-            <img class="foot-img" src="rub/teacher.jpg" alt="Ry Visan" />
-            <p class="foot-name">Ry Visan</p>
-          </div>
-          <div class="foot-col">
-            <h3>Setec Institute</h3>
-            <img class="foot-img" src="rub/setec.png" alt="Setec Institute logo" />
-            <p class="foot-name">Setec</p>
-          </div>
+      </article>
+    </main>
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="foot-grid">
+        <div class="foot-col">
+          <h3>My Profile</h3>
+          <img class="foot-img" src="rub/me.jpg" alt="Chhery Vitou" />
+          <p class="foot-name">Chhery Vitou</p>
+        </div>
+        <div class="foot-col">
+          <h3>My Teacher</h3>
+          <img class="foot-img" src="rub/teacher.jpg" alt="Ry Visan" />
+          <p class="foot-name">Ry Visan</p>
+        </div>
+        <div class="foot-col">
+          <h3>Setec Institute</h3>
+          <img class="foot-img" src="rub/setec.png" alt="Setec Institute logo" />
+          <p class="foot-name">Setec</p>
+        </div>
 
-          <div class="foot-col">
-            <h3>Contact Info</h3>
-            <ul class="foot-contact">
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ec4a7a" d="M12 2a6 6 0 0 0-6 6c0 4.500 6 10 6 10s6-5.500 6-10a6 6 0 0 0-6-6zm0 8.500A2.500 2.500 0 1 1 12 5.500a2.500 2.500 0 0 1 0 5z" /><rect x="11.200" y="17" width="1.600" height="6" fill="#ec4a7a" /></svg>
-                <a href="https://www.google.com/maps?q=12.5614005,105.0469743" target="_blank" rel="noopener">(12.5614005, 105.0469743)</a>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.500" fill="#e6d9f2" /><path d="M3.500 7l8.500 6 8.500-6" fill="none" stroke="#b9a3d1" stroke-width="1.500" /></svg>
-                <a href="mailto:Vitou.Chhery@gmail.com">vitouchhery@gmail.com</a>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#ec4a7a" d="M6.600 10.800a15.100 15.100 0 0 0 6.600 6.600l2.200-2.200a1 1 0 0 1 1-.25 11.400 11.400 0 0 0 3.600.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.500a1 1 0 0 1 1 1c0 1.300.2 2.50₀.6 3.6₀a1 1 0 ₀₁-.25 ₁z" /></svg>
-                <a href="tel:+85571651175">+855 71 651 175</a>
-              </li>
-            </ul>
+        <div class="foot-col">
+          <h3>Contact Info</h3>
+          <ul class="foot-contact">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#ec4a7a"
+                  d="M12 2a6 6 0 0 0-6 6c0 4.500 6 10 6 10s6-5.500 6-10a6 6 0 0 0-6-6zm0 8.500A2.500 2.500 0 1 1 12 5.500a2.500 2.500 0 0 1 0 5z" />
+                <rect x="11.200" y="17" width="1.600" height="6" fill="#ec4a7a" />
+              </svg>
+              <a href="https://www.google.com/maps?q=12.5614005,105.0469743" target="_blank" rel="noopener">(12.5614005,
+                105.0469743)</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="6" width="18" height="12" rx="1.500" fill="#e6d9f2" />
+                <path d="M3.500 7l8.500 6 8.500-6" fill="none" stroke="#b9a3d1" stroke-width="1.500" />
+              </svg>
+              <a href="mailto:Vitou.Chhery@gmail.com">vitouchhery@gmail.com</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#ec4a7a"
+                  d="M6.600 10.800a15.100 15.100 0 0 0 6.600 6.600l2.200-2.200a1 1 0 0 1 1-.25 11.400 11.400 0 0 0 3.600.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.500a1 1 0 0 1 1 1c0 1.300.2 2.50₀.6 3.6₀a1 1 0 ₀₁-.25 ₁z" />
+              </svg>
+              <a href="tel:+85571651175">+855 71 651 175</a>
+            </li>
+          </ul>
 
-            <div class="social" aria-label="Social media">
-              <a class="soc fb" href="https://www.facebook.com/share/19ic7PURJ9/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook">
-                <svg viewBox="0 0 24 24"><path fill="#fff" d="M14 8h2.200V5H13.500C11.400 5 10.200 6.400 10.200 8.500V10H8v3h2.200v7h3v-7h2.400l.4-3h-2.800V8.700c0-.4.300-.7 1-.7z" /></svg>
-              </a>
-              <a class="soc ig" href="https://www.instagram.com/chhery_vitou?vrfl=bGdzNm1hdDBmN2Rz" target="_blank" rel="noopener" aria-label="Instagram">
-                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2" /><circle cx="12" cy="12" r="3.700" fill="none" stroke="#fff" stroke-width="2" /><circle cx="17" cy="7" r="1.200" fill="#fff" /></svg>
-              </a>
-              <a class="soc tg" href="https://t.me/God_TouRuu" target="_blank" rel="noopener" aria-label="Telegram">
-                <svg viewBox="0 0 24 24"><path fill="#fff" d="M20.500 4.300 3.500 10.800c-.8.300-.8 1.400 0 1.700l4.300 1.400 1.600 5c.2.600.9.800 1.400.4l2.400-2 4.200 3.100c.6.400 1.300.1 1.500-.6l2.800-14c.2-.8-.5-1.300-1.200-1zM9.300 13.600l8-5-6.300 6-.3 3z" /></svg>
-              </a>
-              <a class="soc gm" href="mailto:vitouchhery@gmail.com" aria-label="Gmail">
-                <svg viewBox="0 0 24 24"><rect x="3.500" y="5.500" width="17" height="13" rx="2" fill="none" stroke="#fff" stroke-width="2" /><path d="M4 7.500l8 6 8-6" fill="none" stroke="#fff" stroke-width="2" /></svg>
-              </a>
-            </div>
-          </div>
-
-          <div class="foot-col foot-hours">
-            <h3>Hours &amp; Web</h3>
-            <p class="day">Monday - Saturday</p>
-            <p class="time">8:00 AM - 6:00 PM</p>
-            <p class="day">Saturday</p>
-            <p class="time">10:00 AM - 3:00 PM</p>
-            <p class="day">Sunday</p>
-            <p class="time">Closed</p>
-            <a class="web" href="https://www.vitouchchery.com" target="_blank" rel="noopener">www.vitouchchery.com</a>
+          <div class="social" aria-label="Social media">
+            <a class="soc fb" href="https://www.facebook.com/share/19ic7PURJ9/?mibextid=wwXIfr" target="_blank"
+              rel="noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24">
+                <path fill="#fff"
+                  d="M14 8h2.200V5H13.500C11.400 5 10.200 6.400 10.200 8.500V10H8v3h2.200v7h3v-7h2.400l.4-3h-2.800V8.700c0-.4.300-.7 1-.7z" />
+              </svg>
+            </a>
+            <a class="soc ig" href="https://www.instagram.com/chhery_vitou?vrfl=bGdzNm1hdDBmN2Rz" target="_blank"
+              rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2" />
+                <circle cx="12" cy="12" r="3.700" fill="none" stroke="#fff" stroke-width="2" />
+                <circle cx="17" cy="7" r="1.200" fill="#fff" />
+              </svg>
+            </a>
+            <a class="soc tg" href="https://t.me/God_TouRuu" target="_blank" rel="noopener" aria-label="Telegram">
+              <svg viewBox="0 0 24 24">
+                <path fill="#fff"
+                  d="M20.500 4.300 3.500 10.800c-.8.300-.8 1.400 0 1.700l4.300 1.400 1.600 5c.2.600.9.800 1.400.4l2.400-2 4.200 3.100c.6.400 1.300.1 1.500-.6l2.800-14c.2-.8-.5-1.300-1.200-1zM9.300 13.600l8-5-6.300 6-.3 3z" />
+              </svg>
+            </a>
+            <a class="soc gm" href="mailto:vitouchhery@gmail.com" aria-label="Gmail">
+              <svg viewBox="0 0 24 24">
+                <rect x="3.500" y="5.500" width="17" height="13" rx="2" fill="none" stroke="#fff" stroke-width="2" />
+                <path d="M4 7.500l8 6 8-6" fill="none" stroke="#fff" stroke-width="2" />
+              </svg>
+            </a>
           </div>
         </div>
-        <p class="foot-copy">&copy; 2026. All Rights Reserved.</p>
-      </footer>
-    </div>
 
-    <script>
-      const input = document.getElementById("searchInput");
-      const overlay = document.getElementById("searchOverlay");
-      const panel = document.getElementById("searchPanel");
+        <div class="foot-col foot-hours">
+          <h3>Hours &amp; Web</h3>
+          <p class="day">Monday - Saturday</p>
+          <p class="time">8:00 AM - 6:00 PM</p>
+          <p class="day">Saturday</p>
+          <p class="time">10:00 AM - 3:00 PM</p>
+          <p class="day">Sunday</p>
+          <p class="time">Closed</p>
+          <a class="web" href="https://www.vitouchchery.com" target="_blank" rel="noopener">www.vitouchchery.com</a>
+        </div>
+      </div>
+      <p class="foot-copy">&copy; 2026. All Rights Reserved.</p>
+    </footer>
+  </div>
 
-      function openSearch() { document.body.classList.add("search-open"); }
-      function closeSearch() { document.body.classList.remove("search-open"); input.blur(); }
+  <script>
+    const input = document.getElementById("searchInput");
+    const overlay = document.getElementById("searchOverlay");
+    const panel = document.getElementById("searchPanel");
 
-      // Click or focus the search bar -> open the panel
-      input.addEventListener("focus", openSearch);
-      input.addEventListener("click", openSearch);
+    function openSearch() { document.body.classList.add("search-open"); }
+    function closeSearch() { document.body.classList.remove("search-open"); input.blur(); }
 
-      // Click the dark area or press Escape -> close
-      overlay.addEventListener("click", closeSearch);
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") closeSearch();
+    // Click or focus the search bar -> open the panel
+    input.addEventListener("focus", openSearch);
+    input.addEventListener("click", openSearch);
+
+    // Click the dark area or press Escape -> close
+    overlay.addEventListener("click", closeSearch);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeSearch();
+    });
+
+    // Click a suggestion -> put its text in the search bar and close
+    panel.querySelectorAll(".sugg").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        input.value = btn.querySelector("span").textContent;
+        closeSearch();
       });
-
-      // Click a suggestion -> put its text in the search bar and close
-      panel.querySelectorAll(".sugg").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          input.value = btn.querySelector("span").textContent;
-          closeSearch();
-        });
-      });
-    </script>
-    <script>
-      // Side panels: Create and Notifications (only one open at a time)
-      (function () {
-        const panels = [
-          { cls: "create-open", btn: "createBtn", close: "createClose" },
-          { cls: "notif-open", btn: "notifBtn", close: "notifClose" },
-          { cls: "msg-open", btn: "msgBtn", close: "msgClose" },
-          { cls: "set-open", btn: "settingsBtn", close: "setClose" },
-        ];
-        function setOpen(active, open) {
-          panels.forEach(function (p) {
-            const isOpen = open && p === active;
-            document.body.classList.toggle(p.cls, isOpen);
-            document.getElementById(p.btn).setAttribute("aria-expanded", isOpen ? "true" : "false");
-          });
-        }
+    });
+  </script>
+  <script>
+    // Side panels: Create and Notifications (only one open at a time)
+    (function () {
+      const panels = [
+        { cls: "create-open", btn: "createBtn", close: "createClose" },
+        { cls: "notif-open", btn: "notifBtn", close: "notifClose" },
+        { cls: "msg-open", btn: "msgBtn", close: "msgClose" },
+        { cls: "set-open", btn: "settingsBtn", close: "setClose" },
+      ];
+      function setOpen(active, open) {
         panels.forEach(function (p) {
-          document.getElementById(p.btn).addEventListener("click", function () {
-            setOpen(p, !document.body.classList.contains(p.cls));
-          });
-          document.getElementById(p.close).addEventListener("click", function () {
-            setOpen(p, false);
-          });
+          const isOpen = open && p === active;
+          document.body.classList.toggle(p.cls, isOpen);
+          document.getElementById(p.btn).setAttribute("aria-expanded", isOpen ? "true" : "false");
         });
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") setOpen(null, false);
+      }
+      panels.forEach(function (p) {
+        document.getElementById(p.btn).addEventListener("click", function () {
+          setOpen(p, !document.body.classList.contains(p.cls));
         });
-      })();
-    </script>
-    <script>
-      // Language: English / Khmer (translates the page text)
-      (function () {
-        const KM = {"My Profile":"ប្រវត្តិរូបរបស់ខ្ញុំ","My Teacher":"គ្រូរបស់ខ្ញុំ","Setec Institute":"វិទ្យាស្ថាន សុីតិច","Contact Info":"ព័ត៌មានទំនាក់ទំនង","Hours & Web":"ម៉ោង និងគេហទំព័រ","Monday - Saturday":"ច័ន្ទ - សៅរ៍","Saturday":"សៅរ៍","Sunday":"អាទិត្យ","Closed":"បិទ","© 2026. All Rights Reserved.":"© ២០២៦។ រក្សាសិទ្ធិគ្រប់យ៉ាង។","Home": "ទំព័រដើម", "Explore": "រុករក", "Create": "បង្កើត", "Updates": "ព័ត៌មានថ្មីៗ", "Messages": "សារ", "Filters": "តម្រង", "Settings": "ការកំណត់", "Search": "ស្វែងរក", "Search your Pins": "ស្វែងរកភីនរបស់អ្នក", "Search by image": "ស្វែងរកតាមរូបភាព", "Voice search": "ស្វែងរកតាមសំឡេង", "All": "ទាំងអស់", "Save": "រក្សាទុក", "Recent searches": "ការស្វែងរកថ្មីៗ", "Ideas for you": "គំនិតសម្រាប់អ្នក", "Popular on Pinterest": "ពេញនិយមនៅលើ Pinterest", "Pin": "ភីន", "Board": "ក្តារ", "Collage": "កូឡាច", "Card": "កាត", "New": "ថ្មី", "Post your photos or videos and add links, stickers, effects and more": "ផុសរូបថត ឬវីដេអូរបស់អ្នក ហើយបន្ថែមតំណ ស្ទីកគ័រ ឥទ្ធិពល និងច្រើនទៀត", "Organize a collection of your favorite Pins by creating a board": "រៀបចំបណ្តុំភីនដែលអ្នកចូលចិត្ត ដោយបង្កើតក្តារ", "Mix and match ideas to build your vision and create something new": "លាយបញ្ចូលគំនិតផ្សេងៗ ដើម្បីបង្កើតចក្ខុវិស័យ និងអ្វីមួយថ្មី", "Choose a Pin, add a message, and send it as a digital card to someone special": "ជ្រើសរើសភីន បន្ថែមសារ ហើយផ្ញើជាកាតឌីជីថលទៅកាន់មនុស្សពិសេស", "Notifications": "ការជូនដំណឹង", "New message": "សារថ្មី", "Suggested": "ការណែនាំ", "You sent a Pin": "អ្នកបានផ្ញើភីន", "Invite your friends": "អញ្ជើញមិត្តភក្តិរបស់អ្នក", "Connect to start chatting": "ភ្ជាប់ដើម្បីចាប់ផ្តើមជជែក", "Settings & Support": "ការកំណត់ និងជំនួយ", "Refine your recommendations": "កែលម្អការណែនាំរបស់អ្នក", "Link to Pinterest": "តភ្ជាប់ទៅ Pinterest", "Reports and violations center": "មជ្ឈមណ្ឌលរបាយការណ៍ និងការរំលោភ", "Be a beta tester": "ក្លាយជាអ្នកសាកល្បងបេតា", "Language": "ភាសា", "Support": "ជំនួយ", "Help center": "មជ្ឈមណ្ឌលជំនួយ", "Create widget": "បង្កើតវិដជិត", "Removals": "ការលុបចេញ", "Personalized Ads": "ពាណិជ្ជកម្មផ្ទាល់ខ្លួន", "Your privacy rights": "សិទ្ធិឯកជនភាពរបស់អ្នក", "Privacy policy": "គោលការណ៍ឯកជនភាព", "Terms of service": "លក្ខខណ្ឌសេវាកម្ម", "Resources": "ធនធាន", "About": "អំពី", "Blog": "ប្លុក", "Businesses": "អាជីវកម្ម", "Careers": "អាជីព", "Developers": "អ្នកអភិវឌ្ឍន៍", "Your saved ideas": "គំនិតដែលអ្នករក្សាទុក", "Pins": "ភីន", "Boards": "ក្តារ", "Group": "ក្រុម", "Share profile": "ចែករំលែកប្រូហ្វាល", "Organize your ideas": "រៀបចំគំនិតរបស់អ្នក", "Create a board": "បង្កើតក្តារ", "Keep track of what inspires you": "តាមដានអ្វីដែលបំផុសគំនិតអ្នក", "Unorganized ideas": "គំនិតដែលមិនទាន់រៀបចំ", "Organize": "រៀបចំ", "Boards let you organize the Pins you save into collections. Start from a cluster below, or create your own.": "ក្តារអនុញ្ញាតឱ្យអ្នករៀបចំភីនដែលអ្នករក្សាទុកជាបណ្តុំ។ ចាប់ផ្តើមពីក្រុមខាងក្រោម ឬបង្កើតផ្ទាល់ខ្លួន។", "Edit profile": "កែប្រូហ្វាល", "Account management": "គ្រប់គ្រងគណនី", "Profile visibility": "ភាពមើលឃើញនៃប្រូហ្វាល", "Display settings": "ការកំណត់ការបង្ហាញ", "Social permissions": "ការអនុញ្ញាតសង្គម", "Privacy and data": "ភាពឯកជន និងទិន្នន័យ", "Security": "សុវត្ថិភាព", "Branded Content": "មាតិកាម៉ាក", "Labs": "មន្ទីរពិសោធន៍", "AI content": "មាតិកា AI", "Activity": "សកម្មភាព", "Architecture": "ស្ថាបត្យកម្ម", "Art": "សិល្បៈ", "Beauty": "សម្រស់", "Entertainment": "ការកម្សាន្ត", "Fashion": "ម៉ូដ", "Food & drink": "អាហារ និងភេសជ្ជៈ", "Health": "សុខភាព", "Home decor": "ការតុបតែងផ្ទះ", "Sport": "កីឡា"};
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-          acceptNode: function (n) {
-            const p = n.parentNode;
-            if (!p || /^(SCRIPT|STYLE|OPTION)$/.test(p.nodeName)) return NodeFilter.FILTER_REJECT;
-            return n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
-          },
+        document.getElementById(p.close).addEventListener("click", function () {
+          setOpen(p, false);
         });
-        const textNodes = [];
-        while (walker.nextNode()) textNodes.push(walker.currentNode);
-        const inputs = Array.prototype.slice.call(document.querySelectorAll("[placeholder]"));
-        const select = document.getElementById("langSelect");
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") setOpen(null, false);
+      });
+    })();
+  </script>
+  <script>
+    // Language: English / Khmer (translates the page text)
+    (function () {
+      const KM = { "My Profile": "ប្រវត្តិរូបរបស់ខ្ញុំ", "My Teacher": "គ្រូរបស់ខ្ញុំ", "Setec Institute": "វិទ្យាស្ថាន សុីតិច", "Contact Info": "ព័ត៌មានទំនាក់ទំនង", "Hours & Web": "ម៉ោង និងគេហទំព័រ", "Monday - Saturday": "ច័ន្ទ - សៅរ៍", "Saturday": "សៅរ៍", "Sunday": "អាទិត្យ", "Closed": "បិទ", "© 2026. All Rights Reserved.": "© ២០២៦។ រក្សាសិទ្ធិគ្រប់យ៉ាង។", "Home": "ទំព័រដើម", "Explore": "រុករក", "Create": "បង្កើត", "Updates": "ព័ត៌មានថ្មីៗ", "Messages": "សារ", "Filters": "តម្រង", "Settings": "ការកំណត់", "Search": "ស្វែងរក", "Search your Pins": "ស្វែងរកភីនរបស់អ្នក", "Search by image": "ស្វែងរកតាមរូបភាព", "Voice search": "ស្វែងរកតាមសំឡេង", "All": "ទាំងអស់", "Save": "រក្សាទុក", "Recent searches": "ការស្វែងរកថ្មីៗ", "Ideas for you": "គំនិតសម្រាប់អ្នក", "Popular on Pinterest": "ពេញនិយមនៅលើ Pinterest", "Pin": "ភីន", "Board": "ក្តារ", "Collage": "កូឡាច", "Card": "កាត", "New": "ថ្មី", "Post your photos or videos and add links, stickers, effects and more": "ផុសរូបថត ឬវីដេអូរបស់អ្នក ហើយបន្ថែមតំណ ស្ទីកគ័រ ឥទ្ធិពល និងច្រើនទៀត", "Organize a collection of your favorite Pins by creating a board": "រៀបចំបណ្តុំភីនដែលអ្នកចូលចិត្ត ដោយបង្កើតក្តារ", "Mix and match ideas to build your vision and create something new": "លាយបញ្ចូលគំនិតផ្សេងៗ ដើម្បីបង្កើតចក្ខុវិស័យ និងអ្វីមួយថ្មី", "Choose a Pin, add a message, and send it as a digital card to someone special": "ជ្រើសរើសភីន បន្ថែមសារ ហើយផ្ញើជាកាតឌីជីថលទៅកាន់មនុស្សពិសេស", "Notifications": "ការជូនដំណឹង", "New message": "សារថ្មី", "Suggested": "ការណែនាំ", "You sent a Pin": "អ្នកបានផ្ញើភីន", "Invite your friends": "អញ្ជើញមិត្តភក្តិរបស់អ្នក", "Connect to start chatting": "ភ្ជាប់ដើម្បីចាប់ផ្តើមជជែក", "Settings & Support": "ការកំណត់ និងជំនួយ", "Refine your recommendations": "កែលម្អការណែនាំរបស់អ្នក", "Link to Pinterest": "តភ្ជាប់ទៅ Pinterest", "Reports and violations center": "មជ្ឈមណ្ឌលរបាយការណ៍ និងការរំលោភ", "Be a beta tester": "ក្លាយជាអ្នកសាកល្បងបេតា", "Language": "ភាសា", "Support": "ជំនួយ", "Help center": "មជ្ឈមណ្ឌលជំនួយ", "Create widget": "បង្កើតវិដជិត", "Removals": "ការលុបចេញ", "Personalized Ads": "ពាណិជ្ជកម្មផ្ទាល់ខ្លួន", "Your privacy rights": "សិទ្ធិឯកជនភាពរបស់អ្នក", "Privacy policy": "គោលការណ៍ឯកជនភាព", "Terms of service": "លក្ខខណ្ឌសេវាកម្ម", "Resources": "ធនធាន", "About": "អំពី", "Blog": "ប្លុក", "Businesses": "អាជីវកម្ម", "Careers": "អាជីព", "Developers": "អ្នកអភិវឌ្ឍន៍", "Your saved ideas": "គំនិតដែលអ្នករក្សាទុក", "Pins": "ភីន", "Boards": "ក្តារ", "Group": "ក្រុម", "Share profile": "ចែករំលែកប្រូហ្វាល", "Organize your ideas": "រៀបចំគំនិតរបស់អ្នក", "Create a board": "បង្កើតក្តារ", "Keep track of what inspires you": "តាមដានអ្វីដែលបំផុសគំនិតអ្នក", "Unorganized ideas": "គំនិតដែលមិនទាន់រៀបចំ", "Organize": "រៀបចំ", "Boards let you organize the Pins you save into collections. Start from a cluster below, or create your own.": "ក្តារអនុញ្ញាតឱ្យអ្នករៀបចំភីនដែលអ្នករក្សាទុកជាបណ្តុំ។ ចាប់ផ្តើមពីក្រុមខាងក្រោម ឬបង្កើតផ្ទាល់ខ្លួន។", "Edit profile": "កែប្រូហ្វាល", "Account management": "គ្រប់គ្រងគណនី", "Profile visibility": "ភាពមើលឃើញនៃប្រូហ្វាល", "Display settings": "ការកំណត់ការបង្ហាញ", "Social permissions": "ការអនុញ្ញាតសង្គម", "Privacy and data": "ភាពឯកជន និងទិន្នន័យ", "Security": "សុវត្ថិភាព", "Branded Content": "មាតិកាម៉ាក", "Labs": "មន្ទីរពិសោធន៍", "AI content": "មាតិកា AI", "Activity": "សកម្មភាព", "Architecture": "ស្ថាបត្យកម្ម", "Art": "សិល្បៈ", "Beauty": "សម្រស់", "Entertainment": "ការកម្សាន្ត", "Fashion": "ម៉ូដ", "Food & drink": "អាហារ និងភេសជ្ជៈ", "Health": "សុខភាព", "Home decor": "ការតុបតែងផ្ទះ", "Sport": "កីឡា" };
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          const p = n.parentNode;
+          if (!p || /^(SCRIPT|STYLE|OPTION)$/.test(p.nodeName)) return NodeFilter.FILTER_REJECT;
+          return n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        },
+      });
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      const inputs = Array.prototype.slice.call(document.querySelectorAll("[placeholder]"));
+      const select = document.getElementById("langSelect");
 
-        function apply(lang) {
-          document.body.classList.toggle("lang-km", lang === "km");
-          document.documentElement.lang = lang === "km" ? "km" : "en";
-          textNodes.forEach(function (n) {
-            if (n._en === undefined) n._en = n.nodeValue;
-            const key = n._en.replace(/\s+/g, " ").trim();
-            n.nodeValue = lang === "km" && KM[key] ? KM[key] : n._en;
-          });
-          inputs.forEach(function (el) {
-            if (el._en === undefined) el._en = el.getAttribute("placeholder");
-            el.setAttribute("placeholder", lang === "km" && KM[el._en] ? KM[el._en] : el._en);
-          });
-          select.value = lang;
-          try { localStorage.setItem("lang", lang); } catch (e) {}
-        }
-        select.addEventListener("change", function () { apply(select.value); });
-        let saved = "en";
-        try { saved = localStorage.getItem("lang") || "en"; } catch (e) {}
-        apply(saved);
-      })();
-    </script>
-  </body>
+      function apply(lang) {
+        document.body.classList.toggle("lang-km", lang === "km");
+        document.documentElement.lang = lang === "km" ? "km" : "en";
+        textNodes.forEach(function (n) {
+          if (n._en === undefined) n._en = n.nodeValue;
+          const key = n._en.replace(/\s+/g, " ").trim();
+          n.nodeValue = lang === "km" && KM[key] ? KM[key] : n._en;
+        });
+        inputs.forEach(function (el) {
+          if (el._en === undefined) el._en = el.getAttribute("placeholder");
+          el.setAttribute("placeholder", lang === "km" && KM[el._en] ? KM[el._en] : el._en);
+        });
+        select.value = lang;
+        try { localStorage.setItem("lang", lang); } catch (e) { }
+      }
+      select.addEventListener("change", function () { apply(select.value); });
+      let saved = "en";
+      try { saved = localStorage.getItem("lang") || "en"; } catch (e) { }
+      apply(saved);
+    })();
+  </script>
+</body>
+
 </html>
